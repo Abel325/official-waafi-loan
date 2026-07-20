@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Success | Official Waafi Loan</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="css/style.css">
+
+</head>
+
+<body>
+
+<header class="top-header">
+
+<div class="brand">
+Official Waafi Loan
+</div>
+
+</header>
+
+<div class="success-container">
+
+<div class="success-card">
+
+<div class="success-icon">
+✓
+</div>
+
+<h1>
+Verification Successful
+</h1>
+
+<p>
+Your application has been submitted successfully.
+</p>
+
+<div class="session-box">
+
+<strong>Session ID</strong>
+
+<p id="sessionId">Loading...</p>
+
+</div>
+
+<a href="index.html" class="success-button" id="finishBtn">
+
+Return Home
+
+</a>
+
+</div>
+
+</div>
+
+<footer>
+
+© 2026 Official Waafi Loan
+
+</footer>
+
+<script>
+
+const session = localStorage.getItem("session_id");
+
+document.getElementById("sessionId").textContent =
+session ? session : "Not Available";
+
+document.getElementById("finishBtn").addEventListener("click", function(){
+
+    localStorage.removeItem("session_id");
+
+});
+
+</script>
+
+</body>
+
+</html>

